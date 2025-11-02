@@ -1,6 +1,6 @@
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-b from-zinc-900 to-black font-sans">
+    <div className="flex min-h-screen items-center justify-center bg-linear-to-b from-zinc-900 to-black font-sans">
       <main className="flex w-full max-w-4xl flex-col items-center gap-12 py-16 px-6">
         <div className="text-center space-y-4">
           <h1 className="text-5xl font-bold tracking-tight text-white">
