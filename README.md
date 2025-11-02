@@ -48,10 +48,6 @@ X402_WALLET_ADDRESS=0xYourWalletAddressHere
 
 # Network to use: "base" or "base-sepolia"
 X402_NETWORK=base-sepolia
-
-# Optional: CDP API credentials for advanced features
-# CDP_API_KEY_ID=your_cdp_api_key_id
-# CDP_API_KEY_SECRET=your_cdp_api_key_secret
 ```
 
 **Note:** The cost is fixed at 0.01 USDC per request and is configured in `middleware.ts`.
@@ -142,33 +138,18 @@ The cost of accessing the API is **fixed at 0.01 USDC** per request and is confi
 
 Set the `X402_NETWORK` environment variable to either `base` or `base-sepolia`:
 
-- Use `base-sepolia` for development and testing (testnet USDC) - **No API keys required**
-- Use `base` for production (real USDC) - **Requires CDP API keys**
+- Use `base-sepolia` for development and testing (testnet USDC)
+- Use `base` for production (real USDC)
 
-⚠️ **Important for Base Mainnet**: The default x402.org facilitator ONLY supports Base Sepolia (testnet). For Base mainnet production use, you MUST set up CDP API keys. See [CDP_SETUP.md](CDP_SETUP.md) for instructions.
+**No API keys required!** This project uses the [PayAI facilitator](https://github.com/Merit-Systems/x402scan/tree/main/packages/facilitators) via the official `facilitators` package from x402scan, which supports Base and Solana networks with built-in resource discovery for AI agents.
+
+#### Alternative: CDP Facilitator
+
+For production environments, you can also use the CDP (Coinbase Developer Platform) facilitator. See [CDP_SETUP.md](CDP_SETUP.md) for detailed instructions on setting up CDP API keys and using the CDP facilitator.
 
 ### Wallet Configuration
 
 You need to provide a wallet address to receive USDC payments on the Base network. Set this in the `X402_WALLET_ADDRESS` environment variable. This should be a valid Ethereum/Base address (0x...).
-
-### CDP API Keys (Required for Base Mainnet)
-
-To use Base mainnet in production, you need CDP (Coinbase Developer Platform) API keys:
-
-1. Go to [CDP Portal](https://portal.cdp.coinbase.com/)
-2. Create an account (free)
-3. Navigate to [API Keys](https://portal.cdp.coinbase.com/projects/api-keys)
-4. Create a **Secret API Key**
-5. Add to your `.env.local`:
-
-```env
-CDP_API_KEY_ID=your_api_key_id
-CDP_API_KEY_SECRET=your_api_key_secret
-```
-
-See [CDP_SETUP.md](CDP_SETUP.md) for detailed setup instructions.
-
-**Note:** CDP API keys are NOT required for Base Sepolia testnet.
 
 ## Deployment
 
@@ -181,7 +162,6 @@ See [CDP_SETUP.md](CDP_SETUP.md) for detailed setup instructions.
 3. Add environment variables in Vercel dashboard:
    - `X402_WALLET_ADDRESS` - Your Base wallet address for receiving payments
    - `X402_NETWORK` - Set to `base` for production or `base-sepolia` for testing
-   - Optional: `CDP_API_KEY_ID` and `CDP_API_KEY_SECRET` for Coinbase Onramp integration
 4. Deploy!
 
 ### Other Platforms

@@ -1,12 +1,14 @@
 import { paymentMiddleware } from "x402-next";
-import { facilitator } from "@coinbase/x402";
+import { payai } from "facilitators";
 
 /**
  * x402 Payment Middleware Configuration
  *
  * Protects API endpoints and requires payment before access
- * - Uses CDP facilitator for Base mainnet (requires CDP API keys)
- * - Uses default x402.org facilitator for Base Sepolia testnet
+ * - Uses PayAI facilitator (no API keys required!)
+ * - Supports BASE and SOLANA networks
+ * - Includes resource discovery support
+ * - AI-payment infrastructure from x402scan
  */
 export const middleware = paymentMiddleware(
   (process.env.X402_WALLET_ADDRESS ||
@@ -63,14 +65,14 @@ export const middleware = paymentMiddleware(
       },
     },
   },
-  // Use CDP facilitator for mainnet (requires CDP API keys in env)
-  // For testnet (base-sepolia), this will automatically use x402.org facilitator
-  facilitator
+  // Use PayAI facilitator from the 'facilitators' package
+  // - Supports BASE and SOLANA networks
+  // - No API keys required
+  // - Includes resource discovery for AI agents
+  payai
 );
 
 // Configure which paths the middleware should run on
 export const config = {
   matcher: ["/api/random/:path*"],
-  // Required for @coinbase/x402 facilitator
-  runtime: "nodejs",
 };

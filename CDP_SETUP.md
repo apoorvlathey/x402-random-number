@@ -1,16 +1,18 @@
-# Setting Up CDP API Keys for Base Mainnet
+# Setting Up CDP Facilitator (Alternative Option)
 
-## Why Do You Need CDP API Keys?
+> **Note:** This guide is for reference purposes. The project currently uses the **X402rs facilitator** from the `facilitators` package, which requires **no API keys**. However, if you want to use the CDP facilitator for production, follow these instructions.
 
-According to the [x402 documentation](https://x402.gitbook.io/x402/llms-full.txt), the **default x402.org facilitator ONLY supports**:
+## Why Use CDP Facilitator?
 
-- ✅ Base Sepolia (testnet)
-- ✅ Solana Devnet (testnet)
-- ❌ **NOT Base mainnet**
+The CDP (Coinbase Developer Platform) facilitator offers:
 
-**For Base mainnet production use**, you need to use the **CDP (Coinbase Developer Platform) facilitator**, which requires API keys.
+- ✅ Enterprise-grade infrastructure
+- ✅ Built-in compliance and KYT/OFAC screening
+- ✅ Official Coinbase support
+- ✅ Automatic listing in x402 Bazaar for discovery
+- ❌ Requires CDP API keys (free to create)
 
-## Getting CDP API Keys (Free)
+## Getting CDP API Keys
 
 ### Step 1: Create a CDP Account
 
@@ -24,7 +26,7 @@ According to the [x402 documentation](https://x402.gitbook.io/x402/llms-full.txt
 3. Choose **"Secret API Key"** (not Client API Key)
 4. Download and securely store your API key file
 
-You'll get:
+You'll receive:
 
 - `CDP_API_KEY_ID` - Your API key ID
 - `CDP_API_KEY_SECRET` - Your API key secret (keep this safe!)
@@ -34,70 +36,170 @@ You'll get:
 Update your `.env.local` file:
 
 ```env
-# Required for Base mainnet
+# Your wallet address
 X402_WALLET_ADDRESS=0xYourWalletAddress
+
+# Network configuration
 X402_NETWORK=base
 
-# CDP API Keys (required for Base mainnet)
+# CDP API Keys (for CDP facilitator)
 CDP_API_KEY_ID=your_api_key_id_here
 CDP_API_KEY_SECRET=your_api_key_secret_here
 ```
 
-### Step 4: Restart Your Server
+## Switching to CDP Facilitator
+
+### Option 1: Using the `facilitators` Package
+
+```typescript
+// middleware.ts
+import { paymentMiddleware } from "x402-next";
+import { coinbase } from "facilitators"; // Import CDP facilitator
+
+export const middleware = paymentMiddleware(
+  (process.env.X402_WALLET_ADDRESS ||
+    "0x0000000000000000000000000000000000000000") as `0x${string}`,
+  {
+    "/api/random": {
+      price: "$0.01",
+      network: "base",
+      config: {
+        description: "Random Number Generation Service",
+        // ... other config
+      },
+    },
+  },
+  coinbase // Use CDP facilitator (requires CDP API keys in env)
+);
+
+export const config = {
+  matcher: ["/api/random/:path*"],
+};
+```
+
+### Option 2: Using `@coinbase/x402` Package Directly
+
+If you prefer to use the official Coinbase package:
+
+1. **Install the package:**
 
 ```bash
-# Stop current server (Ctrl+C)
+pnpm add @coinbase/x402
+```
+
+2. **Update middleware:**
+
+```typescript
+// middleware.ts
+import { paymentMiddleware } from "x402-next";
+import { facilitator } from "@coinbase/x402";
+
+export const middleware = paymentMiddleware(
+  (process.env.X402_WALLET_ADDRESS ||
+    "0x0000000000000000000000000000000000000000") as `0x${string}`,
+  {
+    "/api/random": {
+      price: "$0.01",
+      network: "base",
+      config: {
+        description: "Random Number Generation Service",
+        // ... other config
+      },
+    },
+  },
+  facilitator // Uses CDP API keys from environment
+);
+
+export const config = {
+  matcher: ["/api/random/:path*"],
+  runtime: "nodejs", // Required for @coinbase/x402
+};
+```
+
+3. **Update Next.js config (if needed):**
+
+```typescript
+// next.config.ts
+import type { NextConfig } from "next";
+
+const nextConfig: NextConfig = {
+  // May need experimental features depending on Next.js version
+};
+
+export default nextConfig;
+```
+
+## Testing CDP Facilitator
+
+1. **Restart your dev server:**
+
+```bash
 pnpm dev
 ```
 
-You should now see in the logs:
+2. **Verify in logs** that CDP facilitator is being used
 
-```
-🔧 x402 Middleware Configuration:
-  Wallet Address: 0xf90e6125C8918F1ADAc31f85D80728dB62F17d9B
-  Network: base
-  CDP API Key: SET  ✅
-  CDP Secret: SET   ✅
-  Facilitator: CDP Facilitator (recommended for production)  ✅
-✅ x402 Middleware loaded successfully
-```
+3. **Test on Base Sepolia first** before going to mainnet
 
-## Testing on Base Mainnet
+4. **Check x402 Bazaar** - Your endpoint should be automatically listed when using CDP facilitator with proper metadata
 
-Once you have CDP API keys set up:
+## CDP Facilitator Features
 
-1. **Make sure you have real USDC** on Base mainnet
-2. **Have ETH for gas** (even though facilitator is fee-free, you need gas)
-3. Test the API endpoint
+### Automatic Discovery
 
-Your Base mainnet payments should now work! 🎉
+When using the CDP facilitator with proper `outputSchema` in your middleware config, your API will be automatically:
 
-## Still Using Base Sepolia (Testnet)?
+- Listed in the [x402 Bazaar](https://x402.org/bazaar)
+- Discoverable by AI agents
+- Searchable by developers
 
-If you're just testing and want to use Base Sepolia:
+### Compliance Features
 
-```env
-# Testnet configuration (no CDP keys needed)
-X402_WALLET_ADDRESS=0xYourWalletAddress
-X402_NETWORK=base-sepolia
+CDP facilitator includes:
 
-# CDP keys NOT required for testnet
-# CDP_API_KEY_ID=
-# CDP_API_KEY_SECRET=
-```
+- KYT (Know Your Transaction) screening
+- OFAC compliance checking
+- Transaction monitoring
+- Enterprise-grade security
 
-The default x402.org facilitator works perfectly for Base Sepolia.
+### Supported Networks
 
-## Alternative: Community Facilitators
+CDP facilitator supports:
 
-If you **really** can't get CDP API keys, the middleware will fallback to the **PayAI community facilitator** for Base mainnet, but this is **NOT recommended for production** because:
+- **Base** (mainnet)
+- **Base Sepolia** (testnet)
+- **Solana** (mainnet)
+- **Solana Devnet** (testnet)
 
-- ❌ Not officially supported by Coinbase
-- ❌ May have reliability issues
-- ❌ No SLA or guarantees
-- ❌ Could go offline
+## Comparison: PayAI vs CDP
 
-**For production Base mainnet apps, always use CDP facilitator with API keys.**
+| Feature         | PayAI (Current)       | CDP Facilitator         |
+| --------------- | --------------------- | ----------------------- |
+| **Setup**       | ✅ No API keys needed | ❌ Requires CDP account |
+| **Networks**    | BASE, SOLANA          | BASE, SOLANA            |
+| **Discovery**   | ✅ Yes (AI agents)    | ✅ Automatic in Bazaar  |
+| **Compliance**  | ❌ No built-in        | ✅ KYT/OFAC included    |
+| **Support**     | Community             | Official Coinbase       |
+| **Cost**        | Free                  | Free                    |
+| **Reliability** | Community-operated    | Enterprise-grade        |
+
+## When to Use Each
+
+### Use PayAI (Current Setup) When:
+
+- ✅ You want simplicity (no API keys)
+- ✅ You're building a prototype or MVP
+- ✅ You need resource discovery for AI agents
+- ✅ You prefer community-operated infrastructure
+- ✅ You want SOLANA network support
+
+### Use CDP Facilitator When:
+
+- ✅ You need enterprise-grade reliability
+- ✅ You want automatic discovery in x402 Bazaar
+- ✅ You require compliance features (KYT/OFAC)
+- ✅ You need official Coinbase support
+- ✅ You're building a production application
 
 ## Security Best Practices
 
@@ -106,10 +208,24 @@ If you **really** can't get CDP API keys, the middleware will fallback to the **
 3. ✅ **Use environment variables** in production (Vercel, Railway, etc.)
 4. ✅ **Rotate keys periodically** for security
 5. ✅ **Test on Base Sepolia** before going to mainnet
+6. ✅ **Monitor your CDP usage** in the portal
 
 ## Resources
 
 - [CDP Portal](https://portal.cdp.coinbase.com/)
-- [CDP Documentation](https://docs.cdp.coinbase.com/)
-- [x402 Documentation](https://x402.gitbook.io/x402)
+- [CDP Documentation](https://docs.cdp.coinbase.com/x402/welcome)
+- [x402 Bazaar](https://x402.org/bazaar)
 - [CDP Discord](https://discord.com/invite/cdp)
+- [facilitators Package](https://github.com/Merit-Systems/x402scan/tree/main/packages/facilitators)
+
+## Support
+
+For CDP-specific issues:
+
+- [CDP Support](https://www.coinbase.com/developer-platform/support)
+- [CDP Discord](https://discord.com/invite/cdp)
+
+For x402 protocol issues:
+
+- [x402 Discord](https://discord.gg/cdp)
+- [x402 GitHub](https://github.com/coinbase/x402)
