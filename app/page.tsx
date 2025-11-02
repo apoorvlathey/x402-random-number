@@ -17,6 +17,20 @@ export default function Home() {
 
         <RandomNumberGenerator />
 
+        <div className="flex justify-center">
+          <a
+            className="flex h-12 items-center justify-center gap-2 rounded-full border border-zinc-600 px-6 text-white font-medium transition-colors hover:bg-zinc-800"
+            href="https://www.x402scan.com/server/b29bbbc7-2d79-4370-a6f3-f9e4fec2e73b"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            View on x402 Scan
+          </a>
+        </div>
+
         <div className="w-full max-w-2xl bg-zinc-800/50 backdrop-blur-sm rounded-2xl border border-zinc-700 p-8 space-y-6">
           <div>
             <h2 className="text-2xl font-semibold text-white mb-4">
@@ -88,7 +102,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="flex gap-4">
+        <div className="flex gap-4 flex-wrap justify-center">
           <a
             className="flex h-12 items-center justify-center gap-2 rounded-full bg-blue-600 px-6 text-white font-medium transition-colors hover:bg-blue-700"
             href="https://github.com/apoorvlathey/x402-random-number"
