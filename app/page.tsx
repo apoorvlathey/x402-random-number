@@ -52,7 +52,7 @@ export default function Home() {
               Example Request
             </h3>
             <div className="bg-black/50 rounded-lg p-4 font-mono text-sm text-zinc-300 overflow-x-auto">
-              {`curl -X POST http://localhost:3000/api/random \\
+              {`curl -X POST https://x402-random.vercel.app/api/random \\
   -H "Content-Type: application/json" \\
   -d '{"min": 1, "max": 100}'`}
             </div>
