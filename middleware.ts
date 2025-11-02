@@ -1,7 +1,13 @@
 import { paymentMiddleware } from "x402-next";
+import { facilitator } from "@coinbase/x402";
 
-// Configure the x402 payment middleware
-// This protects your API endpoints and requires payment before access
+/**
+ * x402 Payment Middleware Configuration
+ *
+ * Protects API endpoints and requires payment before access
+ * - Uses CDP facilitator for Base mainnet (requires CDP API keys)
+ * - Uses default x402.org facilitator for Base Sepolia testnet
+ */
 export const middleware = paymentMiddleware(
   (process.env.X402_WALLET_ADDRESS ||
     "0x0000000000000000000000000000000000000000") as `0x${string}`,
@@ -56,10 +62,15 @@ export const middleware = paymentMiddleware(
         },
       },
     },
-  }
+  },
+  // Use CDP facilitator for mainnet (requires CDP API keys in env)
+  // For testnet (base-sepolia), this will automatically use x402.org facilitator
+  facilitator
 );
 
 // Configure which paths the middleware should run on
 export const config = {
   matcher: ["/api/random/:path*"],
+  // Required for @coinbase/x402 facilitator
+  runtime: "nodejs",
 };

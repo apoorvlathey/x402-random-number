@@ -142,12 +142,33 @@ The cost of accessing the API is **fixed at 0.01 USDC** per request and is confi
 
 Set the `X402_NETWORK` environment variable to either `base` or `base-sepolia`:
 
-- Use `base-sepolia` for development and testing (testnet USDC)
-- Use `base` for production (real USDC)
+- Use `base-sepolia` for development and testing (testnet USDC) - **No API keys required**
+- Use `base` for production (real USDC) - **Requires CDP API keys**
+
+⚠️ **Important for Base Mainnet**: The default x402.org facilitator ONLY supports Base Sepolia (testnet). For Base mainnet production use, you MUST set up CDP API keys. See [CDP_SETUP.md](CDP_SETUP.md) for instructions.
 
 ### Wallet Configuration
 
 You need to provide a wallet address to receive USDC payments on the Base network. Set this in the `X402_WALLET_ADDRESS` environment variable. This should be a valid Ethereum/Base address (0x...).
+
+### CDP API Keys (Required for Base Mainnet)
+
+To use Base mainnet in production, you need CDP (Coinbase Developer Platform) API keys:
+
+1. Go to [CDP Portal](https://portal.cdp.coinbase.com/)
+2. Create an account (free)
+3. Navigate to [API Keys](https://portal.cdp.coinbase.com/projects/api-keys)
+4. Create a **Secret API Key**
+5. Add to your `.env.local`:
+
+```env
+CDP_API_KEY_ID=your_api_key_id
+CDP_API_KEY_SECRET=your_api_key_secret
+```
+
+See [CDP_SETUP.md](CDP_SETUP.md) for detailed setup instructions.
+
+**Note:** CDP API keys are NOT required for Base Sepolia testnet.
 
 ## Deployment
 
