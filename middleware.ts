@@ -15,7 +15,8 @@ export const middleware = paymentMiddleware(
     "0x0000000000000000000000000000000000000000") as `0x${string}`,
   {
     // Protect the random number API endpoint
-    "/api/random": {
+    // if POST is not specified, then GET endpoint also gets generated.
+    "POST /api/random": {
       price: "$0.01", // 0.01 USDC per request
       network:
         (process.env.X402_NETWORK as "base" | "base-sepolia") || "base-sepolia", // base or base-sepolia
